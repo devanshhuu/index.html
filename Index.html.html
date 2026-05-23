@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiskShield — Cyber Sentinels</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0e27;
+    --deep: #0d1235;
+    --blue: #1a56ff;
+    --cyan: #00d4ff;
+    --gold: #ffd94a;
+    --white: #f0f4ff;
+    --muted: #6b7a9e;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26,86,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,86,255,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient glow */
+  .glow-1, .glow-2 {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 {
+    width: 600px; height: 600px;
+    background: rgba(26,86,255,0.12);
+    top: -200px; left: -200px;
+  }
+  .glow-2 {
+    width: 500px; height: 500px;
+    background: rgba(0,212,255,0.07);
+    bottom: -150px; right: -150px;
+  }
+
+  /* Slides container */
+  .slides {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateY(30px);
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(10,14,39,0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    padding: 12px 24px;
+    border-radius: 100px;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active {
+    background: var(--cyan);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--white);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--card); border-color: var(--cyan); color: var(--cyan); }
+
+  /* Slide counter */
+  .counter {
+    position: fixed;
+    top: 32px; right: 40px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    z-index: 100;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* Team badge */
+  .team-badge {
+    position: fixed;
+    top: 32px; left: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    z-index: 100;
+    font-family: 'Syne', sans-serif;
+    text-transform: uppercase;
+  }
+
+  /* ===================== SLIDE 1: HERO ===================== */
+  .slide-hero {
+    text-align: center;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(72px, 10vw, 120px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -4px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--cyan) 60%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 20px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.7s forwards;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+  .tag {
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    background: var(--card);
+  }
+  .tag.highlight { border-color: var(--cyan); color: var(--cyan); }
+
+  /* Hero shield decoration */
+  .hero-shield {
+    position: absolute;
+    width: 500px; height: 500px;
+    border: 1px solid rgba(26,86,255,0.15);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 30s linear infinite;
+    pointer-events: none;
+  }
+  .hero-shield::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(0,212,255,0.08);
+    border-radius: 50%;
+  }
+
+  /* ===================== SLIDE 2: PROBLEM ===================== */
+  .slide-problem { gap: 50px; }
+  .slide-header {
+    text-align: center;
+    width: 100%;
+  }
+  .slide-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 12px;
+  }
+  .slide-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
+  }
+  .problems-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .prob-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .prob-card:hover {
+    border-color: rgba(255,217,74,0.3);
+    transform: translateY(-4px);
+    background: rgba(255,217,74,0.04);
+  }
+  .prob-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .prob-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .prob-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--gold);
+  }
+  .prob-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ===================== SLIDE 3: SOLUTION ===================== */
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .sol-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sol-card:hover {
+    border-color: rgba(0,212,255,0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,212,255,0.1);
+  }
+  .sol-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(0,212,255,0.06), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sol-card:hover::after { opacity: 1; }
+  .sol-icon-wrap {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 20px;
+  }
+  .sol-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+  .sol-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ===================== SLIDE 4: RISK TABLE ===================== */
+  .risk-table-wrap {
+    width: 100%;
+    max-width: 900px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .risk-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .risk-table thead th {
+    background: rgba(26,86,255,0.2);
+    padding: 18px 24px;
+    text-align: left;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border-bottom: 1px solid var(--border);
+  }
+  .risk-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .risk-table tbody tr:last-child { border-bottom: none; }
+  .risk-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+  .risk-table td {
+    padding: 20px 24px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .risk-table td:first-child { color: var(--white); font-weight: 500; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .badge-low { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+  .badge-med { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .badge-high { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .badge-bonus { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
+  .action-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* ===================== SLIDE 5: LOOPHOLES ===================== */
+  .loopholes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .loop-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: all 0.3s;
+  }
+  .loop-card:hover {
+    border-color: rgba(26,86,255,0.4);
+    transform: translateX(4px);
+  }
+  .loop-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--blue);
+    background: rgba(26,86,255,0.1);
+    border: 1px solid rgba(26,86,255,0.2);
+    padding: 6px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .loop-content {}
+  .loop-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+  .loop-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ===================== SLIDE 6: TECH STACK ===================== */
+  .tech-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 960px;
+    width: 100%;
+  }
+  .tech-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 32px;
+  }
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 28px;
+  }
+  .tech-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tech-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .tech-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    flex-shrink: 0;
+  }
+  .tech-label { font-size: 12px; color: var(--muted); min-width: 80px; }
+  .tech-value { font-size: 14px; font-weight: 500; color: var(--white); }
+  .phase-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .phase-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .phase-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(255,217,74,0.08);
+    border: 1px solid rgba(255,217,74,0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    height: fit-content;
+  }
+  .phase-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .phase-desc strong { color: var(--white); display: block; margin-bottom: 3px; font-size: 13px; }
+
+  /* ===================== SLIDE 7: IMPACT ===================== */
+  .impact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 960px;
+    width: 100%;
+    align-items: center;
+  }
+  .impact-stat {
+    text-align: center;
+    padding: 48px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .impact-stat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 100%, rgba(26,86,255,0.15), transparent 70%);
+  }
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 96px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    display: block;
+  }
+  .stat-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-top: 8px;
+  }
+  .stat-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .why-list { display: flex; flex-direction: column; gap: 16px; }
+  .why-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px 22px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: all 0.3s;
+  }
+  .why-item:hover { border-color: rgba(0,212,255,0.3); transform: translateX(4px); }
+  .why-check {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .why-text strong { display: block; font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .why-text span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ===================== SLIDE 8: OUTRO ===================== */
+  .outro-content { text-align: center; }
+  .outro-big {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(56px, 8vw, 96px);
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--white) 30%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .outro-tagline {
+    font-size: 20px;
+    color: var(--muted);
+    margin-top: 20px;
+    font-weight: 300;
+  }
+  .outro-team {
+    margin-top: 48px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .outro-chip {
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--card);
+  }
+  .outro-chip span { color: var(--white); font-weight: 500; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    z-index: 200;
+    transition: width 0.5s ease;
+  }
+
+  /* Keyboard hint */
+  .hint {
+    position: fixed;
+    bottom: 96px;
+    right: 40px;
+    font-size: 11px;
+    color: rgba(107,122,158,0.6);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="glow-1"></div>
+<div class="glow-2"></div>
+
+<div class="progress" id="progress"></div>
+
+<div class="team-badge">Team Cyber Sentinels · Integral University</div>
+<div class="counter" id="counter">01 / 08</div>
+<div class="hint">← → KEYS OR CLICK ARROWS</div>
+
+<!-- SLIDES -->
+<div class="slides" id="slides">
+
+  <!-- Slide 1: Hero -->
+  <div class="slide slide-hero active" id="s1">
+    <div class="hero-shield"></div>
+    <div class="hero-eyebrow">Canara Bank Cyber Hackathon SuRaksha · Fintech Security Track</div>
+    <div class="hero-title">RiskShield</div>
+    <div class="hero-subtitle">Multi-Factor Risk-Based Authentication System</div>
+    <div class="hero-tags">
+      <div class="tag highlight">Zero Friction</div>
+      <div class="tag">Device Intelligence</div>
+      <div class="tag">Geofencing</div>
+      <div class="tag">Dynamic Risk Scoring</div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Problem -->
+  <div class="slide slide-problem" id="s2">
+    <div class="slide-header">
+      <div class="slide-label">The Challenge</div>
+      <div class="slide-title">Banking Credentials Are<br>Dangerously Fragile</div>
+    </div>
+    <div class="problems-grid">
+      <div class="prob-card">
+        <span class="prob-icon">⚠️</span>
+        <div class="prob-title">Static Weakness</div>
+        <div class="prob-desc">Standard passwords are sitting ducks — easily phished or cracked through credential stuffing attacks at scale.</div>
+      </div>
+      <div class="prob-card">
+        <span class="prob-icon">👤</span>
+        <div class="prob-title">Identity Blindness</div>
+        <div class="prob-desc">Current systems can't tell apart a real customer from a hacker who obtained valid credentials — they both look identical.</div>
+      </div>
+      <div class="prob-card">
+        <span class="prob-icon">📍</span>
+        <div class="prob-title">Context Failure</div>
+        <div class="prob-desc">Basic geo-checks are defeated the moment an attacker operates within the same city radius as the victim.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Solution -->
+  <div class="slide" id="s3" style="gap:50px">
+    <div class="slide-header">
+      <div class="slide-label">The Solution</div>
+      <div class="slide-title">A 3-Layer Risk-Score Engine</div>
+    </div>
+    <div class="solution-grid">
+      <div class="sol-card">
+        <div class="sol-icon-wrap">🔑</div>
+        <div class="sol-title">Device ID</div>
+        <div class="sol-desc">Parses browser metadata and OS headers to build a unique, persistent hardware fingerprint for every user's device.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon-wrap">🌐</div>
+        <div class="sol-title">Geofencing</div>
+        <div class="sol-desc">Verifies live GPS coordinates against historical patterns to instantly catch Impossible Travel anomalies.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon-wrap">⚡</div>
+        <div class="sol-title">Risk Logic</div>
+        <div class="sol-desc">A real-time dynamic scoring engine that escalates authentication requirements based on behavioral signals.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Risk Calculation -->
+  <div class="slide" id="s4" style="gap:40px">
+    <div class="slide-header">
+      <div class="slide-label">How It Works</div>
+      <div class="slide-title">Risk Calculation in Real Time</div>
+    </div>
+    <div class="risk-table-wrap">
+      <table class="risk-table">
+        <thead>
+          <tr>
+            <th>Security Scenario</th>
+            <th>Status</th>
+            <th>Risk Score</th>
+            <th>System Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Known Location + Known Device</td>
+            <td><span class="badge badge-low">Normal</span></td>
+            <td><span class="badge badge-low">0 – 10</span></td>
+            <td><span class="action-tag">✓ Direct Access</span></td>
+          </tr>
+          <tr>
+            <td>Known Location + NEW Device</td>
+            <td><span class="badge badge-med">Unusual</span></td>
+            <td><span class="badge badge-med">30 – 50</span></td>
+            <td><span class="action-tag">? Security Question</span></td>
+          </tr>
+          <tr>
+            <td>NEW Location + NEW Device</td>
+            <td><span class="badge badge-high">Suspicious</span></td>
+            <td><span class="badge badge-high">70+</span></td>
+            <td><span class="action-tag">🔒 Block + OTP</span></td>
+          </tr>
+          <tr>
+            <td>Anomalous Time (e.g. 3 AM)</td>
+            <td><span class="badge badge-bonus">Out of Pattern</span></td>
+            <td><span class="badge badge-bonus">+ Bonus Risk</span></td>
+            <td><span class="action-tag">⬆ Step-up Auth</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Slide 5: Closing Loopholes -->
+  <div class="slide" id="s5" style="gap:44px">
+    <div class="slide-header">
+      <div class="slide-label">Defense in Depth</div>
+      <div class="slide-title">Closing Every Attack Surface</div>
+    </div>
+    <div class="loopholes-grid">
+      <div class="loop-card">
+        <span class="loop-num">01</span>
+        <div class="loop-content">
+          <div class="loop-title">Session Binding</div>
+          <div class="loop-desc">Session tokens are cryptographically bound to User-Agent + IP, making Session Hijacking practically impossible.</div>
+        </div>
+      </div>
+      <div class="loop-card">
+        <span class="loop-num">02</span>
+        <div class="loop-content">
+          <div class="loop-title">ID Rotation</div>
+          <div class="loop-desc">Session IDs regenerate on every single request, cutting off Man-in-the-Middle attacks at the root.</div>
+        </div>
+      </div>
+      <div class="loop-card">
+        <span class="loop-num">03</span>
+        <div class="loop-content">
+          <div class="loop-title">Rate Limiting</div>
+          <div class="loop-desc">Accounts lock automatically after 3 failed attempts — Brute Force attacks become mathematically futile.</div>
+        </div>
+      </div>
+      <div class="loop-card">
+        <span class="loop-num">04</span>
+        <div class="loop-content">
+          <div class="loop-title">Step-up MFA</div>
+          <div class="loop-desc">High-risk score triggers mandatory Time-based OTPs — the final shield even if all else is bypassed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Tech Stack -->
+  <div class="slide" id="s6" style="gap:44px">
+    <div class="slide-header">
+      <div class="slide-label">Implementation</div>
+      <div class="slide-title">Stack & Roadmap</div>
+    </div>
+    <div class="tech-layout">
+      <div class="tech-panel">
+        <div class="panel-title">Technology Stack</div>
+        <div class="tech-item">
+          <div class="tech-dot" style="background:#f97316"></div>
+          <div class="tech-label">Frontend</div>
+          <div class="tech-value">HTML5, CSS3, JS + Geolocation API</div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-dot" style="background:#8b5cf6"></div>
+          <div class="tech-label">Backend</div>
+          <div class="tech-value">PHP 8.x — Risk Engine Core</div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-dot" style="background:#3b82f6"></div>
+          <div class="tech-label">Database</div>
+          <div class="tech-value">MySQL — Device & Log Tables</div>
+        </div>
+        <div class="tech-item">
+          <div class="tech-dot" style="background:#10b981"></div>
+          <div class="tech-label">Security</div>
+          <div class="tech-value">OpenSSL + Bcrypt Hashing</div>
+        </div>
+      </div>
+      <div class="tech-panel">
+        <div class="panel-title">Project Roadmap</div>
+        <div class="phase-item">
+          <span class="phase-num">P1</span>
+          <div class="phase-desc"><strong>Secure DB Schema + Login UI</strong>Design normalized tables, build the front-end login flow.</div>
+        </div>
+        <div class="phase-item">
+          <span class="phase-num">P2</span>
+          <div class="phase-desc"><strong>Risk Scoring Algorithm</strong>Implement the core engine logic in PHP with weighted factors.</div>
+        </div>
+        <div class="phase-item">
+          <span class="phase-num">P3</span>
+          <div class="phase-desc"><strong>Geofencing + Device Parsing</strong>Integrate Geolocation API and User-Agent fingerprinting.</div>
+        </div>
+        <div class="phase-item">
+          <span class="phase-num">P4</span>
+          <div class="phase-desc"><strong>Stress Testing</strong>Red-team against hijacking, brute force and MITM scenarios.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Impact -->
+  <div class="slide" id="s7" style="gap:44px">
+    <div class="slide-header">
+      <div class="slide-label">Business Impact</div>
+      <div class="slide-title">Why RiskShield Wins</div>
+    </div>
+    <div class="impact-layout">
+      <div class="impact-stat">
+        <span class="stat-number">95%</span>
+        <div class="stat-label">Fraud Reduction</div>
+        <div class="stat-sub">By blocking suspicious logins<br>before they ever succeed</div>
+      </div>
+      <div class="why-list">
+        <div class="why-item">
+          <div class="why-check">✦</div>
+          <div class="why-text">
+            <strong>Zero Friction for Real Users</strong>
+            <span>Loyal customers log in instantly. Only attackers hit barriers — security that doesn't punish honesty.</span>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-check">✦</div>
+          <div class="why-text">
+            <strong>Plug-and-Play Scalable</strong>
+            <span>Built to integrate directly into Canara Bank's existing PHP/Java infrastructure with zero re-architecture.</span>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-check">✦</div>
+          <div class="why-text">
+            <strong>100% Open-Source Stack</strong>
+            <span>No expensive third-party licenses — full capability at a fraction of enterprise security platform costs.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Outro -->
+  <div class="slide" id="s8">
+    <div class="hero-shield"></div>
+    <div class="outro-content">
+      <div class="outro-big">Ready to<br>Secure Banking.</div>
+      <div class="outro-tagline">RiskShield — because one stolen password<br>should never be enough to rob a customer.</div>
+      <div class="outro-team">
+        <div class="outro-chip">Team <span>Cyber Sentinels</span></div>
+        <div class="outro-chip"><span>Integral University</span>, Lucknow</div>
+        <div class="outro-chip">Track: <span>Fintech Security</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn">←</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">→</button>
+</nav>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX - 6 + 'px';
+    cursor.style.top = e.clientY - 6 + 'px';
+    ring.style.left = e.clientX - 18 + 'px';
+    ring.style.top = e.clientY - 18 + 'px';
+  });
+
+  // Slides
+  const total = 8;
+  let current = 0;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const dotsContainer = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 600);
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    update();
+  }
+
+  function update() {
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    progress.style.width = ((current + 1) / total * 100) + '%';
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  update();
+</script>
+</body>
+</html>
