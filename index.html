@@ -1,1014 +1,725 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RiskShield — Cyber Sentinels</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>A Surprise Just For You 🎉</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #0a0e27;
-    --deep: #0d1235;
-    --blue: #1a56ff;
-    --cyan: #00d4ff;
-    --gold: #ffd94a;
-    --white: #f0f4ff;
-    --muted: #6b7a9e;
-    --card: rgba(255,255,255,0.04);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+    --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+    --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+    --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+    --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+    --text-hero: clamp(2.5rem, 0.5rem + 6vw, 6rem);
+    --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+    --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem;
+    --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem; --space-24: 6rem;
+    --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem;
+    --radius-xl: 1rem; --radius-full: 9999px;
+    --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-theme="dark"] {
+    --bg: #0d0a14;
+    --surface: #13101f;
+    --surface-2: #1a1628;
     --border: rgba(255,255,255,0.08);
+    --text: #f0eef8;
+    --text-muted: #9b96b8;
+    --text-faint: #5a5570;
+    --accent: #c084fc;
+    --accent-hover: #a855f7;
+    --accent-glow: rgba(192,132,252,0.25);
+    --gold: #f59e0b;
+    --pink: #f472b6;
+    --shadow-lg: 0 24px 60px rgba(0,0,0,0.5);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
   body {
-    background: var(--navy);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    cursor: none;
+    min-height: 100dvh;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--text);
+    background: var(--bg);
+    overflow-x: hidden;
+  }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+
+  #stars-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
   }
 
-  /* Custom Cursor */
-  .cursor {
-    position: fixed;
-    width: 12px; height: 12px;
-    background: var(--cyan);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.1s;
-    mix-blend-mode: screen;
+  .confetti-piece {
+    position: fixed; top: -10px; width: 10px; height: 10px;
+    border-radius: 2px; pointer-events: none; z-index: 1000;
+    animation: confetti-fall linear forwards;
   }
-  .cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1px solid var(--cyan);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transition: all 0.15s ease;
-    opacity: 0.5;
+  @keyframes confetti-fall {
+    0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
   }
 
-  /* Background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(26,86,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(26,86,255,0.05) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Ambient glow */
-  .glow-1, .glow-2 {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .glow-1 {
-    width: 600px; height: 600px;
-    background: rgba(26,86,255,0.12);
-    top: -200px; left: -200px;
-  }
-  .glow-2 {
-    width: 500px; height: 500px;
-    background: rgba(0,212,255,0.07);
-    bottom: -150px; right: -150px;
-  }
-
-  /* Slides container */
-  .slides {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-  }
-
-  .slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 60px 80px;
-    opacity: 0;
-    transform: translateY(30px);
-    pointer-events: none;
-    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .slide.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-  }
-  .slide.exit {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-
-  /* Navigation */
-  .nav {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    z-index: 100;
-    background: rgba(10,14,39,0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    padding: 12px 24px;
-    border-radius: 100px;
-  }
-  .nav-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--muted);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .nav-dot.active {
-    background: var(--cyan);
-    width: 24px;
-    border-radius: 4px;
-  }
-  .nav-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--white);
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    transition: all 0.2s;
-  }
-  .nav-btn:hover { background: var(--card); border-color: var(--cyan); color: var(--cyan); }
-
-  /* Slide counter */
-  .counter {
-    position: fixed;
-    top: 32px; right: 40px;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    z-index: 100;
-    font-family: 'Syne', sans-serif;
-  }
-
-  /* Team badge */
-  .team-badge {
-    position: fixed;
-    top: 32px; left: 40px;
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    z-index: 100;
-    font-family: 'Syne', sans-serif;
-    text-transform: uppercase;
-  }
-
-  /* ===================== SLIDE 1: HERO ===================== */
-  .slide-hero {
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     text-align: center;
-    position: relative;
+    padding: var(--space-8) var(--space-6);
+    gap: var(--space-6);
   }
-  .hero-eyebrow {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 24px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.3s forwards;
+
+  .hero-image {
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--accent);
+    box-shadow: 0 0 40px var(--accent-glow);
+    animation: fadeUp 0.8s ease both;
   }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    background: rgba(192,132,252,0.1);
+    border: 1px solid rgba(192,132,252,0.25);
+    padding: var(--space-2) var(--space-4); border-radius: var(--radius-full);
+    animation: fadeUp 0.8s ease both;
+  }
+
   .hero-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(72px, 10vw, 120px);
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -4px;
-    background: linear-gradient(135deg, var(--white) 0%, var(--cyan) 60%, var(--blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.5s forwards;
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    font-weight: 700;
+    line-height: 1.1;
+    animation: fadeUp 0.8s 0.15s ease both;
   }
-  .hero-subtitle {
-    font-size: 18px;
-    color: var(--muted);
-    margin-top: 20px;
-    font-weight: 300;
-    letter-spacing: 1px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.7s forwards;
+  .hero-title .highlight {
+    color: var(--accent);
+    text-shadow: 0 0 60px var(--accent-glow);
+    font-style: italic;
   }
-  .hero-tags {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 40px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.9s forwards;
-  }
-  .tag {
-    padding: 8px 18px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: var(--muted);
-    background: var(--card);
-  }
-  .tag.highlight { border-color: var(--cyan); color: var(--cyan); }
 
-  /* Hero shield decoration */
-  .hero-shield {
-    position: absolute;
-    width: 500px; height: 500px;
-    border: 1px solid rgba(26,86,255,0.15);
-    border-radius: 50%;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    animation: spin 30s linear infinite;
+  .hero-sub {
+    font-size: var(--text-lg);
+    color: var(--text-muted);
+    max-width: 50ch;
+    line-height: 1.6;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-btn {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    background: var(--accent); color: #fff;
+    font-weight: 600; font-size: var(--text-sm);
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 30px var(--accent-glow);
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+  .hero-btn:hover { background: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 0 50px var(--accent-glow); }
+  .hero-btn:active { transform: translateY(0); }
+
+  .scroll-hint {
+    position: absolute; bottom: var(--space-8); left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+    font-size: var(--text-xs); color: var(--text-faint);
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  .section {
+    position: relative; z-index: 1;
+    padding: clamp(var(--space-12), 8vw, var(--space-24)) var(--space-6);
+    max-width: 860px; margin-inline: auto;
+  }
+
+  .section-label {
+    font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: var(--space-4);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    margin-bottom: var(--space-6);
+  }
+
+  .reasons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+
+  .reason-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .reason-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(192,132,252,0.3);
+  }
+  .reason-card .emoji { font-size: 2rem; margin-bottom: var(--space-3); }
+  .reason-card h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg); margin-bottom: var(--space-2);
+  }
+  .reason-card p { font-size: var(--text-sm); color: var(--text-muted); line-height: 1.6; }
+
+  .timeline { position: relative; margin-top: var(--space-8); }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 20px; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: 0.4;
+  }
+  .timeline-item {
+    display: flex; gap: var(--space-6);
+    margin-bottom: var(--space-8);
+    padding-left: var(--space-4);
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .timeline-dot {
+    flex-shrink: 0; width: 40px; height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--surface-2);
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  .timeline-image {
+    width: 100%; height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-3);
+  }
+  .timeline-content h3 {
+    font-family: var(--font-display); font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+  .timeline-content p { font-size: var(--text-sm); color: var(--text-muted); line-height: 1.6; max-width: 55ch; }
+  .timeline-year {
+    font-size: var(--text-xs); color: var(--accent);
+    font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: var(--space-1);
+  }
+
+  .message-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-10);
+    position: relative;
+    overflow: hidden;
+    margin-top: var(--space-8);
+  }
+  .message-box::before {
+    content: '"';
+    position: absolute; top: -20px; left: var(--space-6);
+    font-family: var(--font-display);
+    font-size: 12rem; line-height: 1;
+    color: var(--accent); opacity: 0.06;
     pointer-events: none;
   }
-  .hero-shield::before {
-    content: '';
-    position: absolute;
-    inset: 20px;
-    border: 1px solid rgba(0,212,255,0.08);
-    border-radius: 50%;
-  }
-
-  /* ===================== SLIDE 2: PROBLEM ===================== */
-  .slide-problem { gap: 50px; }
-  .slide-header {
-    text-align: center;
-    width: 100%;
-  }
-  .slide-label {
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--gold);
-    font-family: 'Syne', sans-serif;
-    margin-bottom: 12px;
-  }
-  .slide-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1.05;
-  }
-  .problems-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 1000px;
-  }
-  .prob-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 28px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-  }
-  .prob-card:hover {
-    border-color: rgba(255,217,74,0.3);
-    transform: translateY(-4px);
-    background: rgba(255,217,74,0.04);
-  }
-  .prob-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gold), transparent);
-  }
-  .prob-icon {
-    font-size: 32px;
-    margin-bottom: 16px;
-    display: block;
-  }
-  .prob-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--gold);
-  }
-  .prob-desc {
-    font-size: 14px;
-    color: var(--muted);
+  .message-text {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-style: italic;
     line-height: 1.6;
+    color: var(--text);
+    position: relative; z-index: 1;
   }
-
-  /* ===================== SLIDE 3: SOLUTION ===================== */
-  .solution-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 1000px;
+  .message-author {
+    margin-top: var(--space-6);
+    display: flex; align-items: center; gap: var(--space-3);
+    font-size: var(--text-sm); color: var(--text-muted);
+    position: relative; z-index: 1;
   }
-  .sol-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 36px 28px;
-    text-align: center;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .sol-card:hover {
-    border-color: rgba(0,212,255,0.4);
-    transform: translateY(-6px);
-    box-shadow: 0 20px 60px rgba(0,212,255,0.1);
-  }
-  .sol-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(0,212,255,0.06), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .sol-card:hover::after { opacity: 1; }
-  .sol-icon-wrap {
-    width: 64px; height: 64px;
-    border-radius: 18px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-    margin: 0 auto 20px;
-  }
-  .sol-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--cyan);
-    margin-bottom: 12px;
-  }
-  .sol-desc {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
-  }
-
-  /* ===================== SLIDE 4: RISK TABLE ===================== */
-  .risk-table-wrap {
-    width: 100%;
-    max-width: 900px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .risk-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .risk-table thead th {
-    background: rgba(26,86,255,0.2);
-    padding: 18px 24px;
-    text-align: left;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    border-bottom: 1px solid var(--border);
-  }
-  .risk-table tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
-  }
-  .risk-table tbody tr:last-child { border-bottom: none; }
-  .risk-table tbody tr:hover { background: rgba(255,255,255,0.03); }
-  .risk-table td {
-    padding: 20px 24px;
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .risk-table td:first-child { color: var(--white); font-weight: 500; }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-  }
-  .badge-low { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
-  .badge-med { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
-  .badge-high { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-  .badge-bonus { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
-  .action-tag {
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--white);
-  }
-
-  /* ===================== SLIDE 5: LOOPHOLES ===================== */
-  .loopholes-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    max-width: 900px;
-    width: 100%;
-  }
-  .loop-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 30px 28px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    transition: all 0.3s;
-  }
-  .loop-card:hover {
-    border-color: rgba(26,86,255,0.4);
-    transform: translateX(4px);
-  }
-  .loop-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--blue);
-    background: rgba(26,86,255,0.1);
-    border: 1px solid rgba(26,86,255,0.2);
-    padding: 6px 10px;
-    border-radius: 8px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .loop-content {}
-  .loop-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--white);
-  }
-  .loop-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* ===================== SLIDE 6: TECH STACK ===================== */
-  .tech-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    max-width: 960px;
-    width: 100%;
-  }
-  .tech-panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 36px 32px;
-  }
-  .panel-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 28px;
-  }
-  .tech-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .tech-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .tech-dot {
-    width: 8px; height: 8px;
+  .message-author-image {
+    width: 45px; height: 45px;
     border-radius: 50%;
-    background: var(--cyan);
-    flex-shrink: 0;
+    object-fit: cover;
+    border: 2px solid var(--accent);
   }
-  .tech-label { font-size: 12px; color: var(--muted); min-width: 80px; }
-  .tech-value { font-size: 14px; font-weight: 500; color: var(--white); }
-  .phase-item {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .phase-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .phase-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--gold);
-    background: rgba(255,217,74,0.08);
-    border: 1px solid rgba(255,217,74,0.2);
-    padding: 4px 8px;
-    border-radius: 6px;
-    flex-shrink: 0;
-    height: fit-content;
-  }
-  .phase-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
-  .phase-desc strong { color: var(--white); display: block; margin-bottom: 3px; font-size: 13px; }
-
-  /* ===================== SLIDE 7: IMPACT ===================== */
-  .impact-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    max-width: 960px;
-    width: 100%;
-    align-items: center;
-  }
-  .impact-stat {
-    text-align: center;
-    padding: 48px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .impact-stat::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 100%, rgba(26,86,255,0.15), transparent 70%);
-  }
-  .stat-number {
-    font-family: 'Syne', sans-serif;
-    font-size: 96px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--cyan), var(--blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    display: block;
-  }
-  .stat-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--white);
-    margin-top: 8px;
-  }
-  .stat-sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-  .why-list { display: flex; flex-direction: column; gap: 16px; }
-  .why-item {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    padding: 20px 22px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    transition: all 0.3s;
-  }
-  .why-item:hover { border-color: rgba(0,212,255,0.3); transform: translateX(4px); }
-  .why-check {
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.3);
+  .message-author-dot {
+    width: 36px; height: 36px; border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--accent), var(--pink));
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
+    font-size: 1rem;
   }
-  .why-text strong { display: block; font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-  .why-text span { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-  /* ===================== SLIDE 8: OUTRO ===================== */
-  .outro-content { text-align: center; }
-  .outro-big {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(56px, 8vw, 96px);
-    font-weight: 800;
-    letter-spacing: -3px;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--white) 30%, var(--cyan) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .wish-section {
+    text-align: center; padding: var(--space-24) var(--space-6);
+    position: relative; z-index: 1;
   }
-  .outro-tagline {
-    font-size: 20px;
-    color: var(--muted);
-    margin-top: 20px;
-    font-weight: 300;
+  .wish-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl); margin-bottom: var(--space-4);
   }
-  .outro-team {
-    margin-top: 48px;
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+  .wish-sub { font-size: var(--text-base); color: var(--text-muted); margin-bottom: var(--space-8); }
+  .wish-btn {
+    display: inline-flex; align-items: center; gap: var(--space-3);
+    background: linear-gradient(135deg, var(--accent), var(--pink));
+    color: #fff; font-weight: 700; font-size: var(--text-base);
+    padding: var(--space-4) var(--space-10);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 40px rgba(244,114,182,0.3);
+    transition: transform var(--transition), box-shadow var(--transition);
   }
-  .outro-chip {
-    padding: 12px 24px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    font-size: 13px;
-    color: var(--muted);
-    background: var(--card);
+  .wish-btn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(244,114,182,0.4); }
+  .wish-btn:active { transform: scale(0.98); }
+
+  footer {
+    position: relative; z-index: 1; text-align: center;
+    padding: var(--space-12) var(--space-6);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-sm); color: var(--text-faint);
   }
-  .outro-chip span { color: var(--white); font-weight: 500; }
+  footer span { color: var(--pink); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes spin {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Progress bar */
-  .progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--blue), var(--cyan));
-    z-index: 200;
-    transition: width 0.5s ease;
+  .reveal { opacity: 0; }
+  @supports (animation-timeline: scroll()) {
+    .reveal {
+      animation: fadeUp 0.6s ease forwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
   }
 
-  /* Keyboard hint */
-  .hint {
-    position: fixed;
-    bottom: 96px;
-    right: 40px;
-    font-size: 11px;
-    color: rgba(107,122,158,0.6);
-    letter-spacing: 1px;
+  #splash {
+    position: fixed; inset: 0; z-index: 900;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: var(--space-8); padding: var(--space-8);
+    text-align: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    overflow-y: auto;
+  }
+  #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .splash-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl); line-height: 1.2;
+  }
+  .splash-title em { color: var(--accent); font-style: italic; }
+  .splash-input-wrap {
+    display: flex; gap: var(--space-3);
+    flex-wrap: wrap; justify-content: center;
+    width: 100%; max-width: 480px;
+  }
+  .splash-input {
+    flex: 1; min-width: 200px;
+    background: var(--surface);
+    border: 1px solid rgba(192,132,252,0.35);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-6);
+    color: var(--text); font-size: var(--text-base);
+    outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .splash-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .splash-btn {
+    background: var(--accent); color: #fff; font-weight: 700;
+    padding: var(--space-4) var(--space-8); border-radius: var(--radius-lg);
+    font-size: var(--text-base);
+    transition: background var(--transition), transform var(--transition);
+  }
+  .splash-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .splash-hint { font-size: var(--text-sm); color: var(--text-faint); }
+
+  #popup {
+    position: fixed; inset: 0; z-index: 800;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  #popup.show { opacity: 1; visibility: visible; }
+  .popup-box {
+    background: var(--surface-2);
+    border: 1px solid rgba(192,132,252,0.3);
+    border-radius: var(--radius-xl);
+    padding: var(--space-10) var(--space-12);
+    text-align: center; max-width: 480px;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  #popup.show .popup-box { transform: scale(1); }
+  .popup-emoji { font-size: 4rem; margin-bottom: var(--space-4); }
+  .popup-title {
+    font-family: var(--font-display); font-size: var(--text-xl);
+    margin-bottom: var(--space-3);
+  }
+  .popup-msg { font-size: var(--text-base); color: var(--text-muted); margin-bottom: var(--space-6); line-height: 1.6; }
+  .popup-close {
+    background: var(--accent); color: #fff; font-weight: 600;
+    padding: var(--space-3) var(--space-8); border-radius: var(--radius-full);
+    transition: background var(--transition);
+  }
+  .popup-close:hover { background: var(--accent-hover); }
+
+  @media (max-width: 480px) {
+    .timeline::before { left: 16px; }
+    .message-box { padding: var(--space-6); }
+    .message-text { font-size: var(--text-lg); }
+    .hero-image { width: 140px; height: 140px; }
   }
 </style>
 </head>
 <body>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
-<div class="glow-1"></div>
-<div class="glow-2"></div>
+<canvas id="stars-canvas"></canvas>
 
-<div class="progress" id="progress"></div>
-
-<div class="team-badge">Team Cyber Sentinels · Integral University</div>
-<div class="counter" id="counter">01 / 08</div>
-<div class="hint">← → KEYS OR CLICK ARROWS</div>
-
-<!-- SLIDES -->
-<div class="slides" id="slides">
-
-  <!-- Slide 1: Hero -->
-  <div class="slide slide-hero active" id="s1">
-    <div class="hero-shield"></div>
-    <div class="hero-eyebrow">Canara Bank Cyber Hackathon SuRaksha · Fintech Security Track</div>
-    <div class="hero-title">RiskShield</div>
-    <div class="hero-subtitle">Multi-Factor Risk-Based Authentication System</div>
-    <div class="hero-tags">
-      <div class="tag highlight">Zero Friction</div>
-      <div class="tag">Device Intelligence</div>
-      <div class="tag">Geofencing</div>
-      <div class="tag">Dynamic Risk Scoring</div>
-    </div>
+<div id="splash">
+  <div class="splash-title">
+    ✨ Who is this <em>special surprise</em> for?
   </div>
-
-  <!-- Slide 2: Problem -->
-  <div class="slide slide-problem" id="s2">
-    <div class="slide-header">
-      <div class="slide-label">The Challenge</div>
-      <div class="slide-title">Banking Credentials Are<br>Dangerously Fragile</div>
-    </div>
-    <div class="problems-grid">
-      <div class="prob-card">
-        <span class="prob-icon">⚠️</span>
-        <div class="prob-title">Static Weakness</div>
-        <div class="prob-desc">Standard passwords are sitting ducks — easily phished or cracked through credential stuffing attacks at scale.</div>
-      </div>
-      <div class="prob-card">
-        <span class="prob-icon">👤</span>
-        <div class="prob-title">Identity Blindness</div>
-        <div class="prob-desc">Current systems can't tell apart a real customer from a hacker who obtained valid credentials — they both look identical.</div>
-      </div>
-      <div class="prob-card">
-        <span class="prob-icon">📍</span>
-        <div class="prob-title">Context Failure</div>
-        <div class="prob-desc">Basic geo-checks are defeated the moment an attacker operates within the same city radius as the victim.</div>
-      </div>
-    </div>
+  <p style="color:var(--text-muted); font-size:var(--text-base); max-width:38ch; line-height:1.6;">
+    Enter your best friend's name and your name to personalise this surprise website just for them!
+  </p>
+  <div style="display:flex; flex-direction:column; gap:var(--space-3); width:100%; max-width:400px;">
+    <input class="splash-input" id="friendName" placeholder="Your name" autocomplete="off" />
+    <input class="splash-input" id="yourName" placeholder="Freind name " autocomplete="off" />
   </div>
+  <button class="splash-btn" id="launchBtn">🎉 Launch the Surprise!</button>
+  <p class="splash-hint">Try entering "Abhijit" to see the magic! 💜</p>
+</div>
 
-  <!-- Slide 3: Solution -->
-  <div class="slide" id="s3" style="gap:50px">
-    <div class="slide-header">
-      <div class="slide-label">The Solution</div>
-      <div class="slide-title">A 3-Layer Risk-Score Engine</div>
-    </div>
-    <div class="solution-grid">
-      <div class="sol-card">
-        <div class="sol-icon-wrap">🔑</div>
-        <div class="sol-title">Device ID</div>
-        <div class="sol-desc">Parses browser metadata and OS headers to build a unique, persistent hardware fingerprint for every user's device.</div>
-      </div>
-      <div class="sol-card">
-        <div class="sol-icon-wrap">🌐</div>
-        <div class="sol-title">Geofencing</div>
-        <div class="sol-desc">Verifies live GPS coordinates against historical patterns to instantly catch Impossible Travel anomalies.</div>
-      </div>
-      <div class="sol-card">
-        <div class="sol-icon-wrap">⚡</div>
-        <div class="sol-title">Risk Logic</div>
-        <div class="sol-desc">A real-time dynamic scoring engine that escalates authentication requirements based on behavioral signals.</div>
-      </div>
-    </div>
+<div id="popup">
+  <div class="popup-box">
+    <div class="popup-emoji">🎊</div>
+    <h2 class="popup-title" id="popup-title">Surprise!</h2>
+    <p class="popup-msg" id="popup-msg">Loading your personalised message...</p>
+    <button class="popup-close" onclick="closePopup()">See the Full Surprise ✨</button>
   </div>
+</div>
 
-  <!-- Slide 4: Risk Calculation -->
-  <div class="slide" id="s4" style="gap:40px">
-    <div class="slide-header">
-      <div class="slide-label">How It Works</div>
-      <div class="slide-title">Risk Calculation in Real Time</div>
-    </div>
-    <div class="risk-table-wrap">
-      <table class="risk-table">
-        <thead>
-          <tr>
-            <th>Security Scenario</th>
-            <th>Status</th>
-            <th>Risk Score</th>
-            <th>System Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Known Location + Known Device</td>
-            <td><span class="badge badge-low">Normal</span></td>
-            <td><span class="badge badge-low">0 – 10</span></td>
-            <td><span class="action-tag">✓ Direct Access</span></td>
-          </tr>
-          <tr>
-            <td>Known Location + NEW Device</td>
-            <td><span class="badge badge-med">Unusual</span></td>
-            <td><span class="badge badge-med">30 – 50</span></td>
-            <td><span class="action-tag">? Security Question</span></td>
-          </tr>
-          <tr>
-            <td>NEW Location + NEW Device</td>
-            <td><span class="badge badge-high">Suspicious</span></td>
-            <td><span class="badge badge-high">70+</span></td>
-            <td><span class="action-tag">🔒 Block + OTP</span></td>
-          </tr>
-          <tr>
-            <td>Anomalous Time (e.g. 3 AM)</td>
-            <td><span class="badge badge-bonus">Out of Pattern</span></td>
-            <td><span class="badge badge-bonus">+ Bonus Risk</span></td>
-            <td><span class="action-tag">⬆ Step-up Auth</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+<div id="main-content" style="display:none;">
 
-  <!-- Slide 5: Closing Loopholes -->
-  <div class="slide" id="s5" style="gap:44px">
-    <div class="slide-header">
-      <div class="slide-label">Defense in Depth</div>
-      <div class="slide-title">Closing Every Attack Surface</div>
+  <section class="hero">
+    <div id="heroImageContainer"></div>
+    <div class="hero-tag">✨ A special message for you</div>
+    <h1 class="hero-title">
+      Hey <span class="highlight" id="hero-name">Friend</span>,<br>
+      You are truly<br>one in a million 🌟
+    </h1>
+    <p class="hero-sub" id="hero-sub">
+      Someone very special wanted the whole world to know just how amazing you are.
+      This page was made with love — only for you.
+    </p>
+    <a href="#reasons" class="hero-btn">Discover Your Surprise 💜</a>
+    <div class="scroll-hint">
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="14" height="22" rx="7"/>
+        <circle cx="8" cy="7" r="2" fill="currentColor" style="animation:bob2 2s ease-in-out infinite"/>
+      </svg>
+      Scroll to explore
     </div>
-    <div class="loopholes-grid">
-      <div class="loop-card">
-        <span class="loop-num">01</span>
-        <div class="loop-content">
-          <div class="loop-title">Session Binding</div>
-          <div class="loop-desc">Session tokens are cryptographically bound to User-Agent + IP, making Session Hijacking practically impossible.</div>
-        </div>
-      </div>
-      <div class="loop-card">
-        <span class="loop-num">02</span>
-        <div class="loop-content">
-          <div class="loop-title">ID Rotation</div>
-          <div class="loop-desc">Session IDs regenerate on every single request, cutting off Man-in-the-Middle attacks at the root.</div>
-        </div>
-      </div>
-      <div class="loop-card">
-        <span class="loop-num">03</span>
-        <div class="loop-content">
-          <div class="loop-title">Rate Limiting</div>
-          <div class="loop-desc">Accounts lock automatically after 3 failed attempts — Brute Force attacks become mathematically futile.</div>
-        </div>
-      </div>
-      <div class="loop-card">
-        <span class="loop-num">04</span>
-        <div class="loop-content">
-          <div class="loop-title">Step-up MFA</div>
-          <div class="loop-desc">High-risk score triggers mandatory Time-based OTPs — the final shield even if all else is bypassed.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 
-  <!-- Slide 6: Tech Stack -->
-  <div class="slide" id="s6" style="gap:44px">
-    <div class="slide-header">
-      <div class="slide-label">Implementation</div>
-      <div class="slide-title">Stack & Roadmap</div>
+  <section class="section" id="reasons">
+    <p class="section-label">💜 Because you deserve to know</p>
+    <h2 class="section-title">Reasons You Are<br>Absolutely Incredible</h2>
+    <div class="reasons-grid" id="reasons-grid">
     </div>
-    <div class="tech-layout">
-      <div class="tech-panel">
-        <div class="panel-title">Technology Stack</div>
-        <div class="tech-item">
-          <div class="tech-dot" style="background:#f97316"></div>
-          <div class="tech-label">Frontend</div>
-          <div class="tech-value">HTML5, CSS3, JS + Geolocation API</div>
-        </div>
-        <div class="tech-item">
-          <div class="tech-dot" style="background:#8b5cf6"></div>
-          <div class="tech-label">Backend</div>
-          <div class="tech-value">PHP 8.x — Risk Engine Core</div>
-        </div>
-        <div class="tech-item">
-          <div class="tech-dot" style="background:#3b82f6"></div>
-          <div class="tech-label">Database</div>
-          <div class="tech-value">MySQL — Device & Log Tables</div>
-        </div>
-        <div class="tech-item">
-          <div class="tech-dot" style="background:#10b981"></div>
-          <div class="tech-label">Security</div>
-          <div class="tech-value">OpenSSL + Bcrypt Hashing</div>
-        </div>
-      </div>
-      <div class="tech-panel">
-        <div class="panel-title">Project Roadmap</div>
-        <div class="phase-item">
-          <span class="phase-num">P1</span>
-          <div class="phase-desc"><strong>Secure DB Schema + Login UI</strong>Design normalized tables, build the front-end login flow.</div>
-        </div>
-        <div class="phase-item">
-          <span class="phase-num">P2</span>
-          <div class="phase-desc"><strong>Risk Scoring Algorithm</strong>Implement the core engine logic in PHP with weighted factors.</div>
-        </div>
-        <div class="phase-item">
-          <span class="phase-num">P3</span>
-          <div class="phase-desc"><strong>Geofencing + Device Parsing</strong>Integrate Geolocation API and User-Agent fingerprinting.</div>
-        </div>
-        <div class="phase-item">
-          <span class="phase-num">P4</span>
-          <div class="phase-desc"><strong>Stress Testing</strong>Red-team against hijacking, brute force and MITM scenarios.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 
-  <!-- Slide 7: Impact -->
-  <div class="slide" id="s7" style="gap:44px">
-    <div class="slide-header">
-      <div class="slide-label">Business Impact</div>
-      <div class="slide-title">Why RiskShield Wins</div>
+  <section class="section">
+    <p class="section-label">📅 Our story together</p>
+    <h2 class="section-title">Memories We'll<br>Never Forget</h2>
+    <div class="timeline" id="timeline">
     </div>
-    <div class="impact-layout">
-      <div class="impact-stat">
-        <span class="stat-number">95%</span>
-        <div class="stat-label">Fraud Reduction</div>
-        <div class="stat-sub">By blocking suspicious logins<br>before they ever succeed</div>
-      </div>
-      <div class="why-list">
-        <div class="why-item">
-          <div class="why-check">✦</div>
-          <div class="why-text">
-            <strong>Zero Friction for Real Users</strong>
-            <span>Loyal customers log in instantly. Only attackers hit barriers — security that doesn't punish honesty.</span>
-          </div>
-        </div>
-        <div class="why-item">
-          <div class="why-check">✦</div>
-          <div class="why-text">
-            <strong>Plug-and-Play Scalable</strong>
-            <span>Built to integrate directly into Canara Bank's existing PHP/Java infrastructure with zero re-architecture.</span>
-          </div>
-        </div>
-        <div class="why-item">
-          <div class="why-check">✦</div>
-          <div class="why-text">
-            <strong>100% Open-Source Stack</strong>
-            <span>No expensive third-party licenses — full capability at a fraction of enterprise security platform costs.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 
-  <!-- Slide 8: Outro -->
-  <div class="slide" id="s8">
-    <div class="hero-shield"></div>
-    <div class="outro-content">
-      <div class="outro-big">Ready to<br>Secure Banking.</div>
-      <div class="outro-tagline">RiskShield — because one stolen password<br>should never be enough to rob a customer.</div>
-      <div class="outro-team">
-        <div class="outro-chip">Team <span>Cyber Sentinels</span></div>
-        <div class="outro-chip"><span>Integral University</span>, Lucknow</div>
-        <div class="outro-chip">Track: <span>Fintech Security</span></div>
+  <section class="section">
+    <p class="section-label">💌 From the heart</p>
+    <h2 class="section-title">A Message<br>Just For You</h2>
+    <div class="message-box reveal">
+      <p class="message-text" id="message-text">
+        "You showed up on my worst days without me even asking. That's the kind of person you are —
+        quietly incredible, fiercely loyal, and genuinely one of the best things in my life.
+        Thank you for being you. I hope today and every day reminds you of just how loved you are."
+      </p>
+      <div class="message-author">
+        <div id="authorImageContainer" style="display:none;"></div>
+        <div id="authorPlaceholder" class="message-author-dot">💜</div>
+        <span>With all my love, <strong id="author-name">Your Your name</strong></span>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="wish-section">
+    <p class="section-label" style="text-align:center">🎉 Make it official</p>
+    <h2 class="wish-title" id="wish-title">Happy Everything,<br>Best Friend!</h2>
+    <p class="wish-sub">Click below for a little extra love 💜</p>
+    <button class="wish-btn" onclick="launchFireworks()">
+      🎆 Send Love &amp; Confetti!
+    </button>
+  </section>
+
+  <footer>
+    Made with <span>♥</span> especially for <strong id="footer-name">you</strong> &nbsp;·&nbsp;
+    Because you deserve the whole internet to know how amazing you are.
+  </footer>
 
 </div>
 
-<!-- Nav -->
-<nav class="nav">
-  <button class="nav-btn" id="prevBtn">←</button>
-  <div id="dots"></div>
-  <button class="nav-btn" id="nextBtn">→</button>
-</nav>
-
 <script>
-  // Cursor
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursorRing');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX - 6 + 'px';
-    cursor.style.top = e.clientY - 6 + 'px';
-    ring.style.left = e.clientX - 18 + 'px';
-    ring.style.top = e.clientY - 18 + 'px';
+// ── STARS ──
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  initStars();
+}
+function initStars() {
+  stars = Array.from({length: 150}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.3,
+    alpha: Math.random(),
+    speed: Math.random() * 0.003 + 0.001,
+    phase: Math.random() * Math.PI * 2
+  }));
+}
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    s.alpha = 0.3 + 0.5 * Math.sin(t * s.speed * 1000 + s.phase);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(192,132,252,${s.alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+requestAnimationFrame(drawStars);
+
+// ── STATE ──
+let friendName = 'Friend';
+let yourName = 'Your Best Friend';
+let friendImage = null;
+
+// ── PRELOADED IMAGES FOR SPECIFIC NAMES ──
+// ADD YOUR FRIEND'S PHOTOS HERE!
+const preloadedImages = {
+  'abhijit': 'https://i.ibb.co/39gJS3Sg/9000.jpg',
+};
+
+// ── REASONS DATA ──
+const reasons = [
+  { emoji: '💫', title: 'Your Smile', desc: 'It literally lights up every room you walk into. People feel happier just being near you.' },
+  { emoji: '🫂', title: 'Your Loyalty', desc: 'You never walk away when things get hard. You stay, you support, you show up. Always.' },
+  { emoji: '😂', title: 'Your Sense of Humour', desc: 'You can turn the worst day into something to laugh about. That\'s a superpower.' },
+  { emoji: '🧠', title: 'Your Intelligence', desc: 'Your ideas, your perspective, your way of seeing the world — it\'s genuinely impressive.' },
+  { emoji: '❤️', title: 'Your Big Heart', desc: 'You care deeply for people. Without them even knowing, you make their lives better.' },
+  { emoji: '🌟', title: 'Your Strength', desc: 'You\'ve faced hard things and kept going. That takes more courage than you realise.' },
+];
+
+// ── MEMORIES DATA ──
+const memories = [
+  { 
+    year: 'The Beginning', 
+    emoji: '🤝', 
+    title: 'The Day We Met', 
+    desc: 'From the very first conversation, something just clicked. It felt like I\'d known you forever.',
+    image: 'https://i.ibb.co/G3nkK8ZX/both.jpg' 
+  },
+  { 
+    year: 'A Great Day', 
+    emoji: '🌅', 
+    title: 'That One Unforgettable Day', 
+    desc: 'We laughed until our stomachs hurt. That day became one of my favourite memories of all time.',
+    image: 'https://i.ibb.co/xwyFQy1/stand.jpg' 
+  },
+  { 
+    year: 'Hard Times', 
+    emoji: '🛡️', 
+    title: 'When You Were There For Me', 
+    desc: 'You didn\'t have to stay. But you did. And I will never forget that.',
+    image: 'https://i.ibb.co/JWxyW6F1/Inte.jpg' 
+  },
+  { 
+    year: 'Always', 
+    emoji: '♾️', 
+    title: 'Every Small Moment', 
+    desc: 'The random messages, the inside jokes — all of it makes life so much better.',
+    image: 'https://i.ibb.co/5WfPFz1f/pp.png' 
+  },
+];
+
+function startSurprise() {
+  const fn = document.getElementById('friendName').value.trim();
+  const yn = document.getElementById('yourName').value.trim();
+  
+  if (!fn) {
+    alert('Please enter your friend\'s name!');
+    document.getElementById('friendName').focus();
+    return;
+  }
+  if (!yn) {
+    alert('Please enter your name!');
+    document.getElementById('yourName').focus();
+    return;
+  }
+  
+  friendName = fn;
+  yourName = yn;
+  
+  // CHECK IF NAME HAS A PRELOADED IMAGE
+  const lowerName = fn.toLowerCase();
+  if (preloadedImages[lowerName]) {
+    friendImage = preloadedImages[lowerName];
+    console.log(`Found preloaded image for ${fn}!`);
+  }
+  
+  populatePage();
+  document.getElementById('splash').classList.add('hidden');
+  document.getElementById('main-content').style.display = 'block';
+  setTimeout(() => showPopup(), 600);
+}
+
+function populatePage() {
+  document.getElementById('hero-name').textContent = friendName;
+  document.getElementById('hero-sub').textContent =
+    `${yourName} wanted the whole world to know just how amazing you are, ${friendName}. This page was made with love — only for you.`;
+  document.getElementById('author-name').textContent = yourName;
+  document.getElementById('wish-title').innerHTML = `Happy Everything,<br>${friendName}!`;
+  document.getElementById('footer-name').textContent = friendName;
+  document.getElementById('popup-title').textContent = `Surprise, ${friendName}! 🎉`;
+  document.getElementById('popup-msg').textContent =
+    `${yourName} built this entire website just to celebrate you. Keep scrolling — this is all for you! 💜`;
+
+  // --- THIS IS THE PART THAT FIXES YOUR IMAGE ---
+  // Add hero image
+  if (friendImage) {
+    document.getElementById('heroImageContainer').innerHTML = 
+      `<img src="${friendImage}" alt="${friendName}" class="hero-image">`;
+  }
+
+  // Add author image
+  if (friendImage) {
+    document.getElementById('authorImageContainer').innerHTML = 
+      `<img src="${friendImage}" alt="${yourName}" class="message-author-image">`;
+    document.getElementById('authorImageContainer').style.display = 'block';
+    document.getElementById('authorPlaceholder').style.display = 'none';
+  }
+  // --- END OF FIX ---
+
+  const grid = document.getElementById('reasons-grid');
+  grid.innerHTML = '';
+  reasons.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'reason-card';
+    card.style.animationDelay = `${i * 0.1}s`;
+    card.innerHTML = `
+      <div class="emoji">${r.emoji}</div>
+      <h3>${r.title}</h3>
+      <p>${r.desc}</p>
+    `;
+    grid.appendChild(card);
   });
 
-  // Slides
-  const total = 8;
-  let current = 0;
-  const slides = Array.from(document.querySelectorAll('.slide'));
-  const counter = document.getElementById('counter');
-  const progress = document.getElementById('progress');
-  const dotsContainer = document.getElementById('dots');
-
-  // Build dots
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
-    d.addEventListener('click', () => goTo(i));
-    dotsContainer.appendChild(d);
-  }
-
-  function goTo(n) {
-    slides[current].classList.remove('active');
-    slides[current].classList.add('exit');
-    setTimeout(() => slides[current].classList.remove('exit'), 600);
-    current = (n + total) % total;
-    slides[current].classList.add('active');
-    update();
-  }
-
-  function update() {
-    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
-    progress.style.width = ((current + 1) / total * 100) + '%';
-    document.querySelectorAll('.nav-dot').forEach((d, i) => {
-      d.classList.toggle('active', i === current);
-    });
-  }
-
-  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
-  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  memories.forEach((m, i) => {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.style.animationDelay = `${i * 0.12}s`;
+    item.innerHTML = `
+      <div class="timeline-dot">${m.emoji}</div>
+      <div class="timeline-content">
+        <div class="timeline-year">${m.year}</div>
+        <h3>${m.title}</h3>
+        <p>${m.desc}</p>
+        <img src="${m.image}" alt="${m.title}" class="timeline-image" />
+      </div>`;
+    tl.appendChild(item);
   });
+}
 
-  update();
+function showPopup() {
+  document.getElementById('popup').classList.add('show');
+  launchConfetti(60);
+}
+
+function closePopup() {
+  document.getElementById('popup').classList.remove('show');
+}
+
+const confettiColors = ['#c084fc','#f472b6','#fbbf24','#34d399','#60a5fa','#fb923c'];
+function launchConfetti(count = 120) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      el.style.width = (Math.random() * 8 + 6) + 'px';
+      el.style.height = (Math.random() * 8 + 6) + 'px';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      el.style.animationDelay = Math.random() * 0.5 + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }, i * 20);
+  }
+}
+
+function launchFireworks() {
+  launchConfetti(180);
+  document.getElementById('popup-title').textContent = `We love you, ${friendName}! 🎆`;
+  document.getElementById('popup-msg').textContent =
+    `You deserve every happiness in the world. Today, tomorrow, and always. 💜`;
+  showPopup();
+}
+
+// ── BUTTON EVENT LISTENER ──
+document.getElementById('launchBtn').addEventListener('click', startSurprise);
+
+// ── KEYBOARD SUPPORT ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('splash').classList.contains('hidden')) {
+    startSurprise();
+  }
+  if (e.key === 'Escape') closePopup();
+});
 </script>
+
 </body>
 </html>
